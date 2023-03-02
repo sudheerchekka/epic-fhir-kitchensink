@@ -1,5 +1,7 @@
 # open.epic.com FHIR sandbox kitchensink
 
+This repo is a backend services application using open.epic.com FHIR APIs to push and retrieve data from the Epic sandbox. It uses OAuth 2.0 authentication wnd authorization where a private key is used to sign JSON Web Token (JWT) which is then presented to the open.epic.com authorization server to obtain an access token. The access token is used to invoke the secure FHIR APIs.
+
 ### Set up instructions
 1. Create Public Private Key Pair
 * you can use openssp or similar tools to generate them
