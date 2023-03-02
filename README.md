@@ -1,6 +1,6 @@
 # open.epic.com FHIR sandbox kitchensink
 
-###Set up instructions
+### Set up instructions
 1. Create Public Private Key Pair
 * you can use openssp or similar tools to generate them
 
@@ -11,12 +11,21 @@
 * Save & Ready for Sandbox
 
 3. Populate environmant variables 
-* Make a copy of .env.example [cp .env.example .env]
-* client_id = <Non-Production Client ID from your build app from previous step>
+* Make a copy of .env.example 
+```bash
+cp .env.example .env
+```
+* client_id = Enter Non-Production Client ID from your build app from previous step
 * private_key = enter the private key from Step 1
 
 4. Install npm dependencies
-* npm install on the root folder
+
+```bash
+npm install on the root folder
+```
 
 5. Run the sample code
-* node get-appts
+
+```bash
+node get-appts.js
+```
