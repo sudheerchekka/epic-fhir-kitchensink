@@ -4,7 +4,7 @@ const axios = require('axios');
 const fhirjwt = require("./fhirjwt");
 const dotenv = require('dotenv').config();
 
-//
+var reuseAccessToken = "";
 
 const instance = axios.create({
   baseURL: 'https://fhir.epic.com/interconnect-fhir-oauth',
@@ -39,9 +39,9 @@ const getAccessToken = async () => {
 
 
 //Get patient data by FHIR Id
-const getPatientData = async (patientId) => {
-  const accessToken = await getAccessToken();
-  console.log("patientId: "+ patientId);
+const getPatientData = async (accessToken, patientId) => {
+  //const accessToken = await getAccessToken();
+  //console.log("patientId: "+ patientId);
   try {
 
     //https://fhir.epic.com/interconnect-fhir-oauth/api/FHIR/DSTU2/Patient?identifier=203714 (get patient by MRN ID)
@@ -62,6 +62,7 @@ const getPatientData = async (patientId) => {
       phone,
       dob});
 
+    console.log("Patient data: ");
     console.log(data);
     return data;
   } catch (error) {
@@ -71,25 +72,23 @@ const getPatientData = async (patientId) => {
 
 
 
-const getAppointments = async () => {
-  const accessToken = await getAccessToken();
-  //const accessToken = 'eyJhbGciOiJSUzI1NiIsInR5cCI6IkpXVCJ9.eyJhdWQiOiJ1cm46b2lkOmZoaXIiLCJjbGllbnRfaWQiOiI4M2ExMjQ5YS05M2U4LTQ4ZDMtODJhNy1hMTdhZDU2ZmJhMWMiLCJlcGljLmVjaSI6InVybjplcGljOk9wZW4uRXBpYy1jdXJyZW50IiwiZXBpYy5tZXRhZGF0YSI6InpGX2owMmJRRjhyeVVjbjVNSjBndFkzQTJCMU5KZUJOS2hJbE5PQ1ZuOHZxT1dqV2E2M04weHBKYmJ3eGdoaEs2NUpUTGtFeXgtUEJvN28zMEdkYVhFV25FMlJHdkhrUjZMd0Y2YlllTXZNcnRaUUNaTktqWjdTVzZIY3RsZEFyIiwiZXBpYy50b2tlbnR5cGUiOiJhY2Nlc3MiLCJleHAiOjE2Nzc2MjIxMTIsImlhdCI6MTY3NzYxODUxMiwiaXNzIjoidXJuOm9pZDpmaGlyIiwianRpIjoiMDU5ODE4OTktMTUzZS00OGU1LTk0N2QtMDMzMTYyMDgyYzJiIiwibmJmIjoxNjc3NjE4NTEyLCJzdWIiOiJldk5wLUtoWXdPT3FBWm4xcFoyZW51QTMifQ.S1RnxArRU0SS13Kt_QHQzVD3RzCwGfE_1PgqlfU4PLO_X10RkdB-TUjz68QSq4IQ-58CErSyzd4iesU3N2aCdcKHST6Mo6NVgoBnLsNFt4RtXdFeRPEUO2baafyblJUP26DAkdXs6dPB5nR0jCHMXRsASarO_qcKgy403U7_v2K4h_br-75Ed5LwCpIy7SzFAitvqF_jqt7fucX8UYiEZZBU_RdCrkes_dTLoM--mWxXLOY2_sA2AwmqxKLegkTErG4z2bpogK7iiFhW4n-PRwcDHSaQM-iiQwF7vP1X7zICtDmY9PeyJVzbXxwOl158RlPotoEq1mczWCdYT6zlMw';
+const getAppointments = async (accessToken, patientId) => {
+  //const accessToken = await getAccessToken();
   
   try {
-    const response = await instance.get('/api/FHIR/STU3/Appointment?patient=eAB3mDIBBcyUKviyzrxsnAw3', {
+    const response = await instance.get('/api/FHIR/STU3/Appointment?patient=' + patientId, {
       headers: {
         Authorization: `Bearer ${accessToken}`,
       },
     });
     const data = [];
 
-    console.log(response.data.entry[0].resource.start);
-    console.log(response.data.entry[0].resource.minutesDuration);
-    console.log(response.data.entry[0].resource.status);
-
-    console.log(response.data.entry[1].resource.start);
-    console.log(response.data.entry[1].resource.minutesDuration);
-    console.log(response.data.entry[1].resource.status);
+    console.log("Patient appointment data: ");
+    for(var i = 0; i < response.data.entry.length; i++)
+    {
+        console.log(response.data.entry[i].resource.start + " :status: " + response.data.entry[i].resource.status);
+    }
+    
 
     /*console.log("Name:" + response.data.name[0].text);
     console.log("Phone: " + response.data.telecom[0].value);
@@ -113,5 +112,106 @@ const getAppointments = async () => {
 };
 
 
-getPatientData('eAB3mDIBBcyUKviyzrxsnAw3');
-//getAppointments();
+const find1stAvailApptSlot = async (accessToken, startTime, endTime) => {
+  //var accessToken = await getAccessToken();
+  //reuseAccessToken = accessToken;
+  //console.log("setting reuseAccessToken: " + reuseAccessToken);
+  
+  try {
+    const response = await instance.post('/api/FHIR/STU3/Appointment/$find', 
+    {
+      "resourceType": "Parameters",
+      "parameter": [
+          {
+              "name": "startTime",
+              //"valueDateTime": "2023-03-22T08:15:00Z"
+              "valueDateTime": startTime
+          },
+          {
+              "name": "endTime",
+              //"valueDateTime": "2023-04-02T08:15:00Z"
+              "valueDateTime": endTime
+          },
+          {
+              "name": "ServiceType",
+              "valueCodeableConcept": {
+                  "coding": [
+                      {
+                          "system": "urn:oid:1.2.840.114350.1.13.861.1.7.3.808267.11",
+                          "code": "40111223"
+                      }
+                  ]
+              }
+          }
+      ]
+  },
+  {
+    headers: {
+      Authorization: `Bearer ${accessToken}`,
+    },
+  });
+  const data = [];
+
+  console.log("Available apppointment slots: ");
+  for(var i = 0; i < response.data.entry.length; i++)
+  {
+      console.log(response.data.entry[i].resource.id + " :start: " + response.data.entry[i].resource.start);
+  }
+
+  console.log("1st available slot @ " + response.data.entry[0].resource.start + ": " + response.data.entry[0].resource.id);
+  return response.data.entry[0].resource.id;
+
+  } catch (error) {
+  throw error;
+  }
+};
+
+
+const bookAppointment = async (accessToken, patientId, appointmentId, appointmentNote) => {
+  
+  try {
+    const response = await instance.post('/api/FHIR/STU3/Appointment/$book', 
+    {
+      "resourceType": "Parameters",   
+      "parameter": 
+      [
+        {
+        "name": "patient",
+        "valueIdentifier": {"value": patientId}
+        },
+        {
+        "name": "appointment",
+        "valueIdentifier": {"value": appointmentId}
+        },
+        {
+        "name": "appointmentNote",
+        "valueString": appointmentNote
+        }
+      ]
+  },
+  {
+    headers: {
+      Authorization: `Bearer ${accessToken}`,
+    },
+  });
+  const data = [];
+
+  console.log("Appointment booking status: " + response.data.entry[0].resource.status);
+  //return response.data.entry[0].resource.id;
+  } catch (error) {
+  throw error;
+  }
+};
+
+const findAndBookSlot = async (patientId) => {
+  const accessToken = await getAccessToken();
+  getPatientData(accessToken, patientId);
+  getAppointments(accessToken, patientId);
+  var find1stAvailApptSlotVar = await find1stAvailApptSlot(accessToken, "2023-03-29T08:15:00Z", "2023-04-02T08:15:00Z");
+  console.log("Next available slotId: " + find1stAvailApptSlotVar);
+  bookAppointment(accessToken, patientId, find1stAvailApptSlotVar, "booking from node.js backend app");
+  getAppointments(accessToken, patientId);
+
+} 
+
+findAndBookSlot('eAB3mDIBBcyUKviyzrxsnAw3');
