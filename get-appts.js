@@ -70,6 +70,31 @@ const getPatientData = async (accessToken, patientId) => {
   }
 };
 
+//https://hostname/instance/api/FHIR/DSTU2/Immunization?patient=TGwyi7uWQngTh8wlsxLyWPi6.8wgRuUnMqMfRuwJhsFkB
+const getPatientImmunizations = async (accessToken, patientId) => {
+  //const accessToken = await getAccessToken();
+  
+  try {
+    const response = await instance.get('/api/FHIR/DSTU2/Immunization?patient=' + patientId, {
+      headers: {
+        Authorization: `Bearer ${accessToken}`,
+      },
+    });
+    const data = [];
+
+    console.log("Patient immunization data: ");
+    for(var i = 0; i < response.data.entry.length; i++)
+    {
+        console.log(response.data.entry[i].resource.vaccineCode.text + " :status: " + response.data.entry[i].resource.status + " on: " + response.data.entry[i].resource.date);
+    }
+    
+    return data;
+  } catch (error) {
+    throw error;
+  }
+};
+
+
 
 
 const getAppointments = async (accessToken, patientId) => {
@@ -203,15 +228,17 @@ const bookAppointment = async (accessToken, patientId, appointmentId, appointmen
   }
 };
 
-const findAndBookSlot = async (patientId) => {
+const patientKitchensink = async (patientId) => {
   const accessToken = await getAccessToken();
   getPatientData(accessToken, patientId);
-  getAppointments(accessToken, patientId);
+  /*getAppointments(accessToken, patientId);
   var find1stAvailApptSlotVar = await find1stAvailApptSlot(accessToken, "2023-03-29T08:15:00Z", "2023-04-02T08:15:00Z");
   console.log("Next available slotId: " + find1stAvailApptSlotVar);
   bookAppointment(accessToken, patientId, find1stAvailApptSlotVar, "booking from node.js backend app");
-  getAppointments(accessToken, patientId);
+  getAppointments(accessToken, patientId);*/
+
+  getPatientImmunizations(accessToken, patientId);
 
 } 
 
-findAndBookSlot('eAB3mDIBBcyUKviyzrxsnAw3');
+patientKitchensink('eAB3mDIBBcyUKviyzrxsnAw3');
