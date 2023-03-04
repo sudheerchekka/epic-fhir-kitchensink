@@ -3,6 +3,7 @@
 const axios = require('axios');
 const fhirjwt = require("./fhirjwt");
 const dotenv = require('dotenv').config();
+const { Analytics } = require('@segment/analytics-node');
 
 var reuseAccessToken = "";
 
@@ -80,13 +81,28 @@ const getPatientImmunizations = async (accessToken, patientId) => {
         Authorization: `Bearer ${accessToken}`,
       },
     });
-    const data = [];
+    const data = new Map();
 
     console.log("Patient immunization data: ");
     for(var i = 0; i < response.data.entry.length; i++)
     {
         console.log(response.data.entry[i].resource.vaccineCode.text + " :status: " + response.data.entry[i].resource.status + " on: " + response.data.entry[i].resource.date);
+
+        var vaccineName = response.data.entry[i].resource.vaccineCode.text;
+        var vaccineStatus = response.data.entry[i].resource.status;
+        var vaccineDate = response.data.entry[i].resource.date;
+
+        //adding only the recent immunization details for each vaccine type to the Map
+        data.set(
+          vaccineName,
+          {
+            vaccineStatus,
+            vaccineDate
+          }
+        );
     }
+
+    console.log(data);
     
     return data;
   } catch (error) {
@@ -229,16 +245,42 @@ const bookAppointment = async (accessToken, patientId, appointmentId, appointmen
 };
 
 const patientKitchensink = async (patientId) => {
+
+  const analytics = new Analytics({ writeKey: process.env.segment_key });
+
   const accessToken = await getAccessToken();
-  getPatientData(accessToken, patientId);
+  /*const patientData = await getPatientData(accessToken, patientId);
+
+  analytics.identify({
+        userId: patientId,
+        traits: {
+          name: patientData[0].name,
+          dob: patientData[0].dob,
+        }
+      });*/
+
+  patientImmus = await getPatientImmunizations(accessToken, patientId);
+  
+  for (var vaccine of patientImmus.entries()) {
+    analytics.track({
+      userId: patientId,
+      event: 'Immunization taken',
+      properties: {
+        vaccineName: vaccine[0],
+        vaccineStatus: vaccine[1].vaccineStatus,
+        vaccineDate: vaccine[1].vaccineDate
+      }
+    });
+  }
+
+
   /*getAppointments(accessToken, patientId);
   var find1stAvailApptSlotVar = await find1stAvailApptSlot(accessToken, "2023-03-29T08:15:00Z", "2023-04-02T08:15:00Z");
   console.log("Next available slotId: " + find1stAvailApptSlotVar);
   bookAppointment(accessToken, patientId, find1stAvailApptSlotVar, "booking from node.js backend app");
   getAppointments(accessToken, patientId);*/
 
-  getPatientImmunizations(accessToken, patientId);
-
+  
 } 
 
 patientKitchensink('eAB3mDIBBcyUKviyzrxsnAw3');
