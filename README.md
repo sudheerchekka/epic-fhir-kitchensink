@@ -29,8 +29,14 @@ cp .env.example .env
 npm install on the root folder
 ```
 
-5. Run the sample code
+5. Send patient profile data to Segment
 
 ```bash
-node get-appts.js
+node patient-profile.js
+```
+
+6. Send patient immunization data from Epic sandbox to Segment
+
+```bash
+node patient-immunizations.js
 ```

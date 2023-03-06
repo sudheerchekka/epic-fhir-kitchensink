@@ -13,7 +13,7 @@ const instance = axios.create({
 });
 
 
-const getAccessToken = async () => {
+async function getAccessToken() {
   
   console.log("Creating JWTToken...");
   var jwttoken = fhirjwt.getJWTToken();
@@ -40,7 +40,7 @@ const getAccessToken = async () => {
 
 
 //Get patient data by FHIR Id
-const getPatientData = async (accessToken, patientId) => {
+async function getPatientData (accessToken, patientId)  {
   //const accessToken = await getAccessToken();
   //console.log("patientId: "+ patientId);
   try {
@@ -72,8 +72,7 @@ const getPatientData = async (accessToken, patientId) => {
 };
 
 //https://hostname/instance/api/FHIR/DSTU2/Immunization?patient=TGwyi7uWQngTh8wlsxLyWPi6.8wgRuUnMqMfRuwJhsFkB
-const getPatientImmunizations = async (accessToken, patientId) => {
-  //const accessToken = await getAccessToken();
+async function getPatientImmunizations(accessToken, patientId) {
   
   try {
     const response = await instance.get('/api/FHIR/DSTU2/Immunization?patient=' + patientId, {
@@ -83,7 +82,7 @@ const getPatientImmunizations = async (accessToken, patientId) => {
     });
     const data = new Map();
 
-    console.log("Patient immunization data: ");
+    console.log("patient-adta: Patient immunization data: ");
     for(var i = 0; i < response.data.entry.length; i++)
     {
         console.log(response.data.entry[i].resource.vaccineCode.text + " :status: " + response.data.entry[i].resource.status + " on: " + response.data.entry[i].resource.date);
@@ -113,7 +112,7 @@ const getPatientImmunizations = async (accessToken, patientId) => {
 
 
 
-const getAppointments = async (accessToken, patientId) => {
+async function getPatientAppointments(accessToken, patientId) {
   //const accessToken = await getAccessToken();
   
   try {
@@ -153,7 +152,7 @@ const getAppointments = async (accessToken, patientId) => {
 };
 
 
-const find1stAvailApptSlot = async (accessToken, startTime, endTime) => {
+async function find1stAvailApptSlot(accessToken, startTime, endTime) {
   //var accessToken = await getAccessToken();
   //reuseAccessToken = accessToken;
   //console.log("setting reuseAccessToken: " + reuseAccessToken);
@@ -208,7 +207,7 @@ const find1stAvailApptSlot = async (accessToken, startTime, endTime) => {
 };
 
 
-const bookAppointment = async (accessToken, patientId, appointmentId, appointmentNote) => {
+async function  bookAppointment (accessToken, patientId, appointmentId, appointmentNote) {
   
   try {
     const response = await instance.post('/api/FHIR/STU3/Appointment/$book', 
@@ -243,6 +242,7 @@ const bookAppointment = async (accessToken, patientId, appointmentId, appointmen
   throw error;
   }
 };
+
 
 const patientKitchensink = async (patientId) => {
 
@@ -283,4 +283,4 @@ const patientKitchensink = async (patientId) => {
   
 } 
 
-patientKitchensink('eAB3mDIBBcyUKviyzrxsnAw3');
+module.exports = { getAccessToken, getPatientData, getPatientAppointments, find1stAvailApptSlot, bookAppointment, getPatientImmunizations  }
