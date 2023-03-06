@@ -1,6 +1,9 @@
 # open.epic.com FHIR sandbox kitchensink
 
-This repo is a backend services application using open.epic.com FHIR APIs to push and retrieve data from the Epic sandbox. It uses OAuth 2.0 authentication wnd authorization where a private key is used to sign JSON Web Token (JWT) which is then presented to the open.epic.com authorization server to obtain an access token. The access token is used to invoke the secure FHIR APIs.
+
+This backend application accesses patient data from the Epic sandbox (open.epic.com) using FHIR APIs and sends that patient data to Twilio Segment. Twilio Segment is configired to build various patient audiences and personlized SMS outreach. 
+
+The application uses OAuth 2.0 authentication to access FHIR APIs.  A public key is first pre-registered on open.epic.com and uses the corresponding private key to sign a JSON Web Token (JWT) which is presented to the authoriaztion server to obtain an access token. This access token is used to call FHIR APIs on the Epic sandbox.
 
 ### Set up instructions
 1. Create Public Private Key Pair
