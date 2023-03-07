@@ -5,6 +5,8 @@ This backend application accesses patient data from the Epic sandbox (open.epic.
 
 The application uses OAuth 2.0 authentication to access FHIR APIs.  A public key is first pre-registered on open.epic.com and uses the corresponding private key to sign a JSON Web Token (JWT) which is presented to the authoriaztion server to obtain an access token. This access token is used to call FHIR APIs on the Epic sandbox.
 
+![Demo Flow](images/Epic_Sandbox_demo.png "Demo Flow")
+
 ### Set up instructions
 1. Create Public Private Key Pair
 * you can use openssp or similar tools to generate them
