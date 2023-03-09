@@ -1,13 +1,36 @@
-# open.epic.com FHIR sandbox kitchensink
+# Patient overdue immunization outreach
 
+The goal of this repo is to demonstrate processing patient immunization data from Epic sandbox (open.epic.com) to create SMS outreach to patients with overdue immunizations.
 
-This backend application accesses patient data from the Epic sandbox (open.epic.com) using FHIR APIs and sends that patient data to Twilio Segment. Twilio Segment is configired to build various patient audiences and personlized SMS outreach. 
+There are 2 parts to this application - (1) node.js based backend application and Twilio Segment to create a campaign
 
-The application uses OAuth 2.0 authentication to access FHIR APIs.  A public key is first pre-registered on open.epic.com and uses the corresponding private key to sign a JSON Web Token (JWT) which is presented to the authoriaztion server to obtain an access token. This access token is used to call FHIR APIs on the Epic sandbox.
+The node.js backend application covers how to accesses patient data from Epic sandbox(open.epic.com) using FHIR APIs and sending that patient data to Twilio's Customer Data Platform, Segment. This application uses OAuth 2.0 authentication to access FHIR APIs.  A public key is first pre-registered on open.epic.com and uses the corresponding private key to sign a JSON Web Token (JWT) which is presented to the authoriaztion server to obtain an access token. This access token is used to call FHIR APIs on the Epic sandbox.
+
 
 ![Demo Flow](images/Epic_Sandbox_demo.png "Demo Flow")
 
-### Set up instructions
+Here are the instructions to set up Twilio Segment to receive patient profile and immunization data, create audience of overdue patients and send SMS campaign.
+
+### Configure Segment (Customer Data Platform)
+
+#### Create a node.js source to receive the patient data. The Write Key is used in the node.js application to send the patient data to Segment
+![Demo Flow](images/segment-source.png "Demo Flow")
+
+#### Create a computed trait for the patient to store the last immunization data
+![Demo Flow](images/segment-computed-trait.png "Demo Flow")
+
+#### Create a Segment Function to send SMS using Twilio SMS API. The source code is here (segment-function.js). Configure the setting based on your Twilio account
+![Demo Flow](images/segment-function.png "Demo Flow")
+
+#### Create Segment audience for all the patients with last immunization date more than 1 year back used the computed trait
+
+![Demo Flow](images/segment-audience.png "Demo Flow")
+
+#### Create a journey that will trigger when overdue patients enter the audience to send SMS
+![Demo Flow](images/segment-journey.png "Demo Flow")
+
+
+### node.js application set up and demo script instructions
 1. Create Public Private Key Pair
 * you can use openssp or similar tools to generate them
 

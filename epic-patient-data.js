@@ -82,24 +82,30 @@ async function getPatientImmunizations(accessToken, patientId) {
     });
     const data = new Map();
 
-    console.log("patient-adta: Patient immunization data: ");
-    for(var i = 0; i < response.data.entry.length; i++)
+    console.log("patient-adta: Patient immunization data: " + response.data.entry[0].resource.vaccineCode);
+
+    if (response.data.entry[0].resource.vaccineCode != undefined)//no immunization data found
     {
-        console.log(response.data.entry[i].resource.vaccineCode.text + " :status: " + response.data.entry[i].resource.status + " on: " + response.data.entry[i].resource.date);
+      for(var i = 0; i < response.data.entry.length; i++)
+      {
+          console.log(response.data.entry[i].resource.vaccineCode.text + " :status: " + response.data.entry[i].resource.status + " on: " + response.data.entry[i].resource.date);
 
-        var vaccineName = response.data.entry[i].resource.vaccineCode.text;
-        var vaccineStatus = response.data.entry[i].resource.status;
-        var vaccineDate = response.data.entry[i].resource.date;
+          var vaccineName = response.data.entry[i].resource.vaccineCode.text;
+          var vaccineStatus = response.data.entry[i].resource.status;
+          var vaccineDate = response.data.entry[i].resource.date;
 
-        //adding only the recent immunization details for each vaccine type to the Map
-        data.set(
-          vaccineName,
-          {
-            vaccineStatus,
-            vaccineDate
-          }
-        );
+          //adding only the recent immunization details for each vaccine type to the Map
+          data.set(
+            vaccineName,
+            {
+              vaccineStatus,
+              vaccineDate
+            }
+          );
+      }
     }
+    else  
+      return data; //empty immunization list
 
     console.log(data);
     

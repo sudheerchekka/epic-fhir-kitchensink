@@ -19,4 +19,6 @@ const sendPatientProfileToSegment = async (patientId) => {
       });
 }
 
-sendPatientProfileToSegment('eAB3mDIBBcyUKviyzrxsnAw3');
+//sendPatientProfileToSegment('eAB3mDIBBcyUKviyzrxsnAw3'); //Desiree Caroline Powell
+//sendPatientProfileToSegment('erXuFYUfucBZaryVksYEcMg3'); //Camila Maria Lopez
+sendPatientProfileToSegment('egqBHVfQlt4Bw3XGXoxVxHg3'); //Elijah Davis
