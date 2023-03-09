@@ -9,23 +9,23 @@ The node.js backend application covers how to accesses patient data from Epic sa
 
 ![Demo Flow](images/Epic_Sandbox_demo.png "Demo Flow")
 
-### Configure Segment (Customer Data Platform)
+### 1. Configure Segment (Customer Data Platform)
 Here are the instructions to set up Twilio Segment to receive patient profile and immunization data, create audience of overdue patients and send SMS campaign.
 
-###### Create a node.js source to receive the patient data. The Write Key is used in the node.js application to send the patient data to Segment
+###### 2. Create a node.js source to receive the patient data. The Write Key is used in the node.js application to send the patient data to Segment
 ![Demo Flow](images/segment-source.png "Demo Flow")
 
-###### Create a computed trait for the patient to store the last immunization data
+###### 3. Create a computed trait for the patient to store the last immunization data
 ![Demo Flow](images/segment-computed-trait.png "Demo Flow")
 
-###### Create a Segment Function to send SMS using Twilio SMS API. The source code is here (segment-function.js). Configure the setting based on your Twilio account
+###### 4. Create a Segment Function to send SMS using Twilio SMS API. The source code is here (segment-function.js). Configure the setting based on your Twilio account
 ![Demo Flow](images/segment-function.png "Demo Flow")
 
-###### Create Segment audience for all the patients with last immunization date more than 1 year back used the computed trait
+###### 5. Create Segment audience for all the patients with last immunization date more than 1 year back used the computed trait
 
 ![Demo Flow](images/segment-audience.png "Demo Flow")
 
-###### Create a journey that will trigger when overdue patients enter the audience to send SMS
+###### 6. Create a journey that will trigger when overdue patients enter the audience to send SMS
 ![Demo Flow](images/segment-journey.png "Demo Flow")
 
 
