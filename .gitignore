@@ -1,3 +1,6 @@
 node_modules
 .env
 log.log
+privatekey.pem
+publickey509.pem
+gg.env
