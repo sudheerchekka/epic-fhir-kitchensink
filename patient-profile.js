@@ -13,7 +13,7 @@ const sendPatientProfileToSegment = async (patientId) => {
   analytics.identify({
         userId: patientId,
         traits: {
-          name: patientData[0].name,
+          patient_name: patientData[0].name,
           dob: patientData[0].dob,
         }
       });
@@ -22,3 +22,5 @@ const sendPatientProfileToSegment = async (patientId) => {
 //sendPatientProfileToSegment('eAB3mDIBBcyUKviyzrxsnAw3'); //Desiree Caroline Powell
 //sendPatientProfileToSegment('erXuFYUfucBZaryVksYEcMg3'); //Camila Maria Lopez
 sendPatientProfileToSegment('egqBHVfQlt4Bw3XGXoxVxHg3'); //Elijah Davis
+
+//sendPatientProfileToSegment('user011'); //Elijah Davis

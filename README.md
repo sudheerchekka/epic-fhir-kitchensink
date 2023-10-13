@@ -31,7 +31,7 @@ Here are the instructions to set up Twilio Segment to receive patient profile an
 
 ### node.js application set up and demo script instructions
 1. Create Public Private Key Pair
-* you can use openssp or similar tools to generate them
+* you can use openssl or similar tools to generate them
 
 2. Create a build app @ open.epic.com
 * Select all applicable Incoming APIs

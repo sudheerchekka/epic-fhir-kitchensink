@@ -39,7 +39,7 @@ const sendPatientImmunizationsToSegment = async (patientId) => {
       properties: {
         vaccineName: "MMR",
         vaccineStatus: "completed",
-        vaccineDate: "2021-09-10"
+        vaccineDate: "2021-10-12"
       }
     });
   }
